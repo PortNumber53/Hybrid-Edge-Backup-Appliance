@@ -1,0 +1,37 @@
+# Base system
+base
+linux
+mkinitcpio
+mkinitcpio-archiso
+syslinux
+
+# Boot
+efibootmgr
+grub
+
+# Networking & Discovery
+networkmanager
+avahi
+nss-mdns
+curl
+openssh
+
+# Container Runtime
+docker
+docker-compose
+
+# Hardware & Storage
+udisks2
+ntfs-3g
+smartmontools
+usbutils
+
+# Application Dependencies
+jq
+tar
+
+# System utilities
+sudo
+nano
+less
+htop

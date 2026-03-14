@@ -1,0 +1,15 @@
+{
+  "mount_base": "/mnt/backup",
+  "compose_dir": "/opt/backup",
+  "compose_file": "docker-compose.yml",
+  "listen_addr": "0.0.0.0:80",
+  "cloud_endpoint": "",
+  "device_id": "",
+  "device_secret": "",
+  "health_timeout": "120s",
+  "update_interval": "5m",
+  "s3_endpoint": "",
+  "s3_bucket": "",
+  "s3_access_key": "",
+  "s3_secret_key": ""
+}
