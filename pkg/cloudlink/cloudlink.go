@@ -85,7 +85,7 @@ func (c *Client) PushStatus(ctx context.Context, status DeviceStatus) error {
 
 // CheckForUpdate queries the cloud for available updates.
 func (c *Client) CheckForUpdate(ctx context.Context) (*UpdateInfo, error) {
-	body, err := c.get(ctx, "/api/devices/updates?device_id="+c.deviceID)
+	body, err := c.get(ctx, "/api/devices/updates")
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (c *Client) CheckForUpdate(ctx context.Context) (*UpdateInfo, error) {
 
 // FetchManifest retrieves the user's backup configuration.
 func (c *Client) FetchManifest(ctx context.Context) (*ManifestConfig, error) {
-	body, err := c.get(ctx, "/api/devices/manifest?device_id="+c.deviceID)
+	body, err := c.get(ctx, "/api/devices/manifest")
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,10 @@ func (c *Client) post(ctx context.Context, path string, payload interface{}) err
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		body, _ := io.ReadAll(resp.Body)
+		body, readErr := io.ReadAll(resp.Body)
+		if readErr != nil {
+			return fmt.Errorf("cloud returned status %d, but reading body failed: %w", resp.StatusCode, readErr)
+		}
 		return fmt.Errorf("cloud returned %d: %s", resp.StatusCode, string(body))
 	}
 	return nil

@@ -19,7 +19,7 @@ OUT_DIR="${SCRIPT_DIR}/out"
 AGENT_BIN="${SCRIPT_DIR}/airootfs/usr/local/bin/backup-agent"
 if [[ ! -f "${AGENT_BIN}" ]]; then
     echo "Error: backup-agent binary not found at ${AGENT_BIN}"
-    echo "Build it first with: make build (from the project root)"
+    echo "Build it first with: make iso-prep (from the project root)"
     exit 1
 fi
 

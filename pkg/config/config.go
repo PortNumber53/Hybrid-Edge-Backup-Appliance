@@ -4,6 +4,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -79,4 +80,18 @@ func Load(path string) (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+// Save writes the configuration back to the given path.
+func Save(path string, cfg *Config) error {
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, data, 0600)
+}
+
+// IsOffline returns true if the device is in offline mode (no cloud link).
+func (c *Config) IsOffline() bool {
+	return c.CloudEndpoint == "" || strings.HasPrefix(c.DeviceID, "local-")
 }

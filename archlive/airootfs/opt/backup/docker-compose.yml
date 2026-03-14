@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   backup-engine:
-    image: ghcr.io/portnumber53/backup-engine:latest
+    image: ghcr.io/portnumber53/backup-engine:v0.1.0
     restart: unless-stopped
     volumes:
       - /mnt/backup:/mnt/backup

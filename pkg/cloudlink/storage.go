@@ -40,8 +40,6 @@ func (u *S3Uploader) UploadDirectory(ctx context.Context, localPath, remotePath 
 		"sync", localPath, remote,
 		"--s3-provider", "Other",
 		"--s3-endpoint", u.endpoint,
-		"--s3-access-key-id", u.accessKey,
-		"--s3-secret-access-key", u.secretKey,
 		"--crypt-remote", remote,
 		"--transfers", "4",
 		"--checkers", "8",
@@ -49,6 +47,10 @@ func (u *S3Uploader) UploadDirectory(ctx context.Context, localPath, remotePath 
 	}
 
 	cmd := exec.CommandContext(ctx, "rclone", args...)
+	cmd.Env = append(cmd.Environ(),
+		"RCLONE_S3_ACCESS_KEY_ID="+u.accessKey,
+		"RCLONE_S3_SECRET_ACCESS_KEY="+u.secretKey,
+	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("rclone sync failed: %s: %w", strings.TrimSpace(string(out)), err)

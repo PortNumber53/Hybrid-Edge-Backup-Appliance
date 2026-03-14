@@ -8,7 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strings"
+	"net/url"
 	"time"
 
 	"github.com/PortNumber53/Hybrid-Edge-Backup-Appliance/pkg/diskops"
@@ -57,7 +57,7 @@ func (s *Server) Start() error {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Only bind to local interfaces for security.
+	// Binds the server to the address specified in the configuration.
 	listener, err := s.localListener()
 	if err != nil {
 		return err
@@ -102,16 +102,18 @@ func (s *Server) corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func isLocalOrigin(origin string) bool {
-	local := []string{"127.0.0.1", "localhost", "192.168.", "10.", "172.16.", "172.17.",
-		"172.18.", "172.19.", "172.20.", "172.21.", "172.22.", "172.23.",
-		"172.24.", "172.25.", "172.26.", "172.27.", "172.28.", "172.29.",
-		"172.30.", "172.31."}
-	for _, prefix := range local {
-		if strings.Contains(origin, prefix) {
-			return true
-		}
+	u, err := url.Parse(origin)
+	if err != nil {
+		return false
 	}
-	return false
+	hostname := u.Hostname()
+
+	if hostname == "localhost" {
+		return true
+	}
+
+	ip := net.ParseIP(hostname)
+	return ip != nil && (ip.IsLoopback() || ip.IsPrivate())
 }
 
 // handleDrives returns the list of mounted drives.
@@ -168,5 +170,7 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 func writeJSON(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("[api] error writing json response: %v", err)
+	}
 }

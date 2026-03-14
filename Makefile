@@ -1,4 +1,4 @@
-.PHONY: build clean test iso
+.PHONY: build clean test iso iso-prep
 
 BINARY_NAME := backup-agent
 BUILD_DIR := ./build
@@ -15,6 +15,7 @@ build:
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -f $(ISO_AGENT_PATH)
+	rm -rf ./archlive/out
 
 test:
 	go test ./...

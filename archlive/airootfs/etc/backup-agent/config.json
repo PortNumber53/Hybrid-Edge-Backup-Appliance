@@ -7,9 +7,5 @@
   "device_id": "",
   "device_secret": "",
   "health_timeout": "120s",
-  "update_interval": "5m",
-  "s3_endpoint": "",
-  "s3_bucket": "",
-  "s3_access_key": "",
-  "s3_secret_key": ""
+  "update_interval": "5m"
 }
