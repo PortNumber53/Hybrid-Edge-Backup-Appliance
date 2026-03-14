@@ -97,14 +97,20 @@ func (o *Orchestrator) Update(ctx context.Context, composeYAML []byte) error {
 
 	if err := o.composeUp(ctx); err != nil {
 		log.Printf("[orchestrator] update: compose up failed, rolling back: %v", err)
-		return o.rollback(ctx, activePath, backupPath)
+		if rbErr := o.rollback(ctx, activePath, backupPath); rbErr != nil {
+			return fmt.Errorf("rollback failed after compose up error: %w (original: %v)", rbErr, err)
+		}
+		return fmt.Errorf("update rolled back: compose up failed: %w", err)
 	}
 	log.Println("[orchestrator] update: new stack started")
 
 	// Step 5: Health verification.
 	if err := o.waitForHealthy(ctx); err != nil {
 		log.Printf("[orchestrator] update: health check failed, rolling back: %v", err)
-		return o.rollback(ctx, activePath, backupPath)
+		if rbErr := o.rollback(ctx, activePath, backupPath); rbErr != nil {
+			return fmt.Errorf("rollback failed after health check error: %w (original: %v)", rbErr, err)
+		}
+		return fmt.Errorf("update rolled back: health check failed: %w", err)
 	}
 	log.Println("[orchestrator] update: health check passed")
 
@@ -129,7 +135,7 @@ func (o *Orchestrator) rollback(ctx context.Context, activePath, backupPath stri
 	}
 
 	log.Println("[orchestrator] rollback completed successfully")
-	return fmt.Errorf("update rolled back due to health check failure")
+	return nil
 }
 
 func (o *Orchestrator) composeUp(ctx context.Context) error {

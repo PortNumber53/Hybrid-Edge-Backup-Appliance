@@ -159,7 +159,10 @@ func tryCloudRegistration(ctx context.Context, endpoint string) (*Credentials, e
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
+		body, readErr := io.ReadAll(resp.Body)
+		if readErr != nil {
+			return nil, fmt.Errorf("registration returned status %d, but reading body failed: %w", resp.StatusCode, readErr)
+		}
 		return nil, fmt.Errorf("registration returned %d: %s", resp.StatusCode, string(body))
 	}
 

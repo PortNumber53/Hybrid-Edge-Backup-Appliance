@@ -113,6 +113,9 @@ func main() {
 	if err := srv.Stop(shutdownCtx); err != nil {
 		log.Printf("api server shutdown error: %v", err)
 	}
+	if err := orch.Stop(shutdownCtx); err != nil {
+		log.Printf("orchestrator shutdown error: %v", err)
+	}
 	diskMgr.Stop()
 	log.Println("backup-agent stopped")
 }

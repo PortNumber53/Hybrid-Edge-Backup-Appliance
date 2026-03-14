@@ -4,6 +4,7 @@ package cloudlink
 import (
 	"bytes"
 	"context"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -190,8 +191,14 @@ func (c *Client) post(ctx context.Context, path string, payload interface{}) err
 }
 
 func (c *Client) addAuth(req *http.Request) {
+	ts := fmt.Sprintf("%d", time.Now().Unix())
+	mac := hmac.New(sha256.New, []byte(c.secret))
+	mac.Write([]byte(ts + "\n" + req.Method + "\n" + req.URL.Path))
+	sig := hex.EncodeToString(mac.Sum(nil))
+
 	req.Header.Set("X-Device-ID", c.deviceID)
-	req.Header.Set("X-Device-Secret", c.secret)
+	req.Header.Set("X-Timestamp", ts)
+	req.Header.Set("X-Signature", sig)
 }
 
 // StartPeriodicSync begins periodic status reporting and manifest syncing.
