@@ -1,0 +1,14 @@
+[Unit]
+Description=Hybrid-Edge Backup Agent
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/backup-agent
+Restart=always
+RestartSec=5
+Environment=BACKUP_AGENT_CONFIG=/etc/backup-agent/config.json
+
+[Install]
+WantedBy=multi-user.target

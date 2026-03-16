@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  backup-engine:
+    image: ghcr.io/portnumber53/backup-engine:v0.1.0
+    restart: unless-stopped
+    volumes:
+      - /mnt/backup:/mnt/backup
+      - backup-data:/data
+    environment:
+      - BACKUP_MODE=local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "8080:8080"
+
+volumes:
+  backup-data:
