@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -47,7 +48,7 @@ func (u *S3Uploader) UploadDirectory(ctx context.Context, localPath, remotePath 
 	}
 
 	cmd := exec.CommandContext(ctx, "rclone", args...)
-	cmd.Env = append(cmd.Environ(),
+	cmd.Env = append(os.Environ(),
 		"RCLONE_S3_ACCESS_KEY_ID="+u.accessKey,
 		"RCLONE_S3_SECRET_ACCESS_KEY="+u.secretKey,
 	)
